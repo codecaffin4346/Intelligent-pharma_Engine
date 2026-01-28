@@ -1,7 +1,14 @@
 import easyocr
 import cv2
-from pyzbar.pyzbar import decode
-from pylibdmtx.pylibdmtx import decode as decode_dmtx
+try:
+    from pyzbar.pyzbar import decode
+except Exception:
+    decode = None
+
+try:
+    from pylibdmtx.pylibdmtx import decode as decode_dmtx
+except Exception:
+    decode_dmtx = None
 from .preprocess import dewarp_cylinder
 
 class OCRSystem:
@@ -28,24 +35,26 @@ class OCRSystem:
         def try_decode(img):
             res = []
             # 1D Barcodes
-            try:
-                for b in decode(img):
-                    res.append({
-                        "type": b.type,
-                        "data": b.data.decode('utf-8'),
-                        "rect": b.rect
-                    })
-            except Exception: pass
+            if decode:
+                try:
+                    for b in decode(img):
+                        res.append({
+                            "type": b.type,
+                            "data": b.data.decode('utf-8'),
+                            "rect": b.rect
+                        })
+                except Exception: pass
             
             # DataMatrix
-            try:
-                for d in decode_dmtx(img):
-                    res.append({
-                        "type": "DataMatrix",
-                        "data": d.data.decode('utf-8'),
-                        "rect": d.rect
-                    })
-            except Exception: pass
+            if decode_dmtx:
+                try:
+                    for d in decode_dmtx(img):
+                        res.append({
+                            "type": "DataMatrix",
+                            "data": d.data.decode('utf-8'),
+                            "rect": d.rect
+                        })
+                except Exception: pass
             return res
 
         # 1. Try Original
