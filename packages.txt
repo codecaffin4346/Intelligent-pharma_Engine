@@ -1,7 +1,7 @@
 libzbar0
 libdmtx0b
-libgl1
-libglib2.0-0
+libgl1-mesa-glx
+libglib2.0-dev
 libsm6
 libxrender1
 libxext6
